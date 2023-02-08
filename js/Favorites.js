@@ -1,3 +1,20 @@
+export class GithubUser {
+    static search(username){
+        const endpoint = `https://api.github.com/users/${username}`
+
+        return fetch(endpoint)
+        .then(data => data.json)
+        .then(({login, name, public_repos, followers}) => ({
+            login,
+            name, 
+            public_repos,
+            followers
+        }))
+        
+    }
+
+}
+
 /*
 Classe que vai conter a logica dos dados
 */
@@ -5,11 +22,10 @@ export class Favorites {
     //método construtor receberá a classe que será manipulada
     constructor(root) {
         this.root = document.querySelector(root)
-
-         this.tbody = this.root.querySelector('table tbody')
-
-
+        this.tbody = this.root.querySelector('table tbody')
         this.load()
+
+        GithubUser.search('maykbrito').then(user => console.log(user))
     }
 
     load(){
@@ -29,8 +45,21 @@ export class Favorites {
         ]
     }
 
-}
+    delete(user){
+        /* Principio da Imutabilidade
+        - Funçoes como filter, map ...
+        - trabalham gerando novos dados já manipulados
+        - permitem que a informaçao original se mantenha
+        */
+        //Higher order functions(map - filter - find - reduce)
+        //A funcao filter valida coondicoes booleanas
+        const filteredEntries = this.entries.filter(entry => entry.login !== user.login)
 
+        this.entries = filteredEntries
+        this.update()
+    }
+
+}
 
 /*
 criar a visualizacao e eventos em HTML
@@ -39,12 +68,15 @@ export class FavoritesView extends Favorites {
     constructor(root){
         super(root) //classe filha com o super() chama o construtor da classe pai
         this.update()
+
+        
     }
 
     update(){
         //o this faz referencia ao alemento da própria classe
         this.removeAllTr()
 
+        //percorre cada user criando seu HTML 
         this.entries.forEach(user => {
             const row = this.createRow()
             
@@ -58,11 +90,19 @@ export class FavoritesView extends Favorites {
             row.querySelector('.repositories').textContent = user.public_repos
             row.querySelector('.followers').textContent = user.followers
             this.tbody.append(row)
+            //selecao do botao de remover aciona funcao de delete
+            row.querySelector('.remove').onclick = ()=> {
+                const isOk = confirm("Tem certeza que deseja deletar esta linha?")
+                if(isOk){
+                    this.delete(user)
+                } 
+            }
+
         })
 
-        
-   
     }
+
+
 
     createRow(){
         //criando elemento pelo JS
