@@ -1,19 +1,4 @@
-export class GithubUser {
-    static search(username){
-        const endpoint = `https://api.github.com/users/${username}`
-
-        return fetch(endpoint)
-        .then(data => data.json)
-        .then(({login, name, public_repos, followers}) => ({
-            login,
-            name, 
-            public_repos,
-            followers
-        }))
-        
-    }
-
-}
+import { GithubUser } from "./GithubUser.js"
 
 /*
 Classe que vai conter a logica dos dados
@@ -22,28 +7,46 @@ export class Favorites {
     //método construtor receberá a classe que será manipulada
     constructor(root) {
         this.root = document.querySelector(root)
-        this.tbody = this.root.querySelector('table tbody')
         this.load()
-
-        GithubUser.search('maykbrito').then(user => console.log(user))
     }
 
     load(){
-    this.entries = [   
-            {
-                login: 'maykbrito',
-                name: "Maik Brito",
-                public_repos: '76',
-                followers: 120000
-            },
-            {
-                login: 'diego3g',
-                name: "Diego Fernandes",
-                public_repos: '98',
-                followers: 890
-            }
-        ]
+        this.entries = JSON.parse(localStorage.getItem('@github-favorites:')) || []
     }
+
+    //Salvando arquivo no formato de JSON no LocalStorage
+    save(){
+        localStorage.setItem('@github-favorites:', JSON.stringify(this.entries))
+    }
+
+    async add(username){
+        
+        try {
+
+            const userExists = this.entries.find(entry => entry.login === username)
+
+            if(userExists){
+                throw new Error('Usuário já cadastrado')
+            }
+
+            const user = await GithubUser.search(username)
+
+            if (user.login === undefined){
+                throw new Error('Usuário não encontrado!')
+            }
+
+            //Operador SPREAD 
+            //Faz os espalhamento insercão de todos os outros usuários do array ali
+            //para o array passamos o novo usuário inserido e também os antigos com o spread
+            this.entries = [user, ...this.entries]
+            this.update()
+            this.save()
+
+        } catch(error){
+            alert(error.message)
+        }
+    }
+
 
     delete(user){
         /* Principio da Imutabilidade
@@ -57,20 +60,33 @@ export class Favorites {
 
         this.entries = filteredEntries
         this.update()
+        this.save()
     }
 
 }
 
 /*
-criar a visualizacao e eventos em HTML
+criar a visualizacao dos eventos em HTML
 */
 export class FavoritesView extends Favorites {
     constructor(root){
         super(root) //classe filha com o super() chama o construtor da classe pai
-        this.update()
 
+        this.tbody = this.root.querySelector('table tbody')
         
+        this.update()
+        this.onAdd()
     }
+
+    onAdd() {
+        const addButton = this.root.querySelector('.search button')
+        addButton.onclick = () => {
+            const { value } = this.root.querySelector('.search input')
+            this.add(value)
+        }
+    }
+
+    
 
     update(){
         //o this faz referencia ao alemento da própria classe
