@@ -3,7 +3,7 @@
 #
 
 <p style="align: center">
-    <a href="https://github.com/jacksonMarcelinoFreitas/GitHub_API/settings/pages">
+    <a href="https://jacksonmarcelinofreitas.github.io/GitHub_API/">
         <img src="https://github.com/jacksonMarcelinoFreitas/Focus_Timer_Challenge/blob/master/assets/button_to_see.png" alt="Button to see the project" 
     </a>
 </p>
