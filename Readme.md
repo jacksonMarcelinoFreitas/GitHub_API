@@ -19,7 +19,7 @@
 🔸Use Local Storage<br>
 🔸Object Orientation in Java Script<br>
 🔸Function filter<br>
-🔸Function<br>
+🔸Destructuring<br>
 🔸Asynchrony<br>
 🔸Promises<br>
 🔸Error handling<br>
