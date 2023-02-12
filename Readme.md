@@ -1,4 +1,4 @@
-<img src=""/>
+<img src="https://github.com/jacksonMarcelinoFreitas/GitHub_API/blob/master/images/capa_readme.png"/>
 
 #
 
