@@ -4,6 +4,10 @@
     box-sizing: border-box;
 }
 
+html{
+    background-color: rgb(215, 215, 215);
+}
+
 :root{
     font-size: 62.5%;
 
